@@ -216,3 +216,24 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Turf Booking System ---
+.env
+.venv/
+venv/
+
+# Testing / typing caches
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node / React frontend
+node_modules/
+frontend/dist/
+frontend/build/
+npm-debug.log*
+
+# Editors
+.idea/
+.vscode/
