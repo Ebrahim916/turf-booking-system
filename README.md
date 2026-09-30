@@ -2,7 +2,8 @@
 
 A full-stack turf (sports ground) booking platform. The backend is built with
 **Python**, **FastAPI**, **PostgreSQL**, **SQLAlchemy 2.0**, **Alembic**,
-**Pydantic v2**, and **JWT** authentication. A React frontend will follow.
+**Pydantic v2**, and **JWT** authentication. The frontend is a **React 19** +
+**Vite** + **Tailwind v4** SPA.
 
 ---
 
@@ -21,6 +22,11 @@ turf-booking-system/
 │   ├── alembic/               # migrations
 │   ├── scripts/seed.py        # development seed data
 │   └── tests/                 # unit + integration
+├── frontend/
+│   ├── src/lib/               # API client, types mirroring the schemas, formatting
+│   ├── src/hooks/             # auth provider, data fetching
+│   ├── src/components/        # app shell, UI, animate-ui icons, orb loaders
+│   └── src/routes/            # one lazily-loaded file per screen
 ├── docker-compose.yml         # PostgreSQL 16
 └── .env.example
 ```
@@ -148,6 +154,28 @@ The seed is idempotent and creates:
 - Swagger UI: <http://127.0.0.1:8000/docs>
 - Health: <http://127.0.0.1:8000/health>
 
+### 6. Run the frontend
+
+With the API still running:
+
+```powershell
+cd ..\frontend
+npm install
+npm run dev
+```
+
+- App: <http://localhost:5173>
+
+Vite proxies `/api`, `/health`, and `/docs` through to port 8000, so the SPA and
+the API share an origin in development. That is deliberate: the refresh token is
+an httpOnly cookie scoped to `/api/v1/auth`, and keeping one origin means no
+SameSite or CORS exceptions are needed for it to be sent. It also puts
+`http://localhost:5173` in the default `CORS_ORIGINS` in case you would rather
+call the API directly.
+
+See [`frontend/README.md`](frontend/README.md) for the frontend's auth model and
+conventions.
+
 ---
 
 ## Development
@@ -258,8 +286,10 @@ docker run -p 8000:8000 --env-file .env turf-api
 
 ## Not yet built
 
-- React frontend
 - Online payments (the booking flow is already adapter-ready)
 - Email verification, password reset, and refresh of invites
 - Turf photos, reviews, and ratings
 - Availability exceptions (holidays, one-off closures)
+- An admin screen for booking status transitions and marking payment — the API
+  supports it (`PATCH /bookings/{id}`) and the SPA surfaces bookings, but the
+  controls are not built yet
